@@ -24,6 +24,7 @@
 
 #include "dcmtk/oflog/helpers/strhelp.h"
 
+#undef DCMTK_LOG4CPLUS_WITH_ICONV
 #if defined (DCMTK_LOG4CPLUS_WITH_ICONV)
 
 #ifdef DCMTK_LOG4CPLUS_HAVE_ICONV_H
@@ -46,7 +47,7 @@ extern "C"
 
     //! SUSv3 iconv() type.
     typedef size_t (& iconv_func_type_1) (iconv_t cd, char * * inbuf,
-    size_t * inbytesleft, char * * outbuf, size_t * outbytesleft); 
+    size_t * inbytesleft, char * * outbuf, size_t * outbytesleft);
 
 
     //! GNU iconv() type.
@@ -115,7 +116,7 @@ struct iconv_handle
     }
 
     iconv_t handle;
-    
+
 // to silence warnings
 private:
     iconv_handle(const iconv_handle&);
@@ -196,12 +197,12 @@ iconv_conv (STD_NAMESPACE basic_string<DestType> & result, char const * destenc,
                     *outbuf = question_mark<outbuf_type>::value;
                     ++outbuf;
                     outbytesleft -= sizeof (outbuf_type);
-                    
+
                     continue;
                 }
 
                 // Fall through.
-                
+
             case E2BIG:;
                 // Fall through.
             }

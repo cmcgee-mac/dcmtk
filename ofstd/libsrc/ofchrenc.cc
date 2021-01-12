@@ -50,6 +50,8 @@ const unsigned int OFCharacterEncoding::CPC_UTF8   = CP_UTF8;
  *  implementation  *
  *------------------*/
 
+#undef DCMTK_ENABLE_CHARSET_CONVERSION
+
 #ifdef DCMTK_ENABLE_CHARSET_CONVERSION
 #if DCMTK_ENABLE_CHARSET_CONVERSION == DCMTK_CHARSET_CONVERSION_ICU
 

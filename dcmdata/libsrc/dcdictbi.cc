@@ -13,6 +13,9 @@
 */
 
 #include "dcmtk/dcmdata/dcdict.h"
+
+#define ENABLE_BUILTIN_DICTIONARY 1
+
 #ifdef ENABLE_BUILTIN_DICTIONARY
 #include "dcmtk/dcmdata/dcdicent.h"
 

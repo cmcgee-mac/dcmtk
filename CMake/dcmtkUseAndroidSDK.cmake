@@ -121,7 +121,7 @@ endfunction()
 #
 function(DCMTK_SETUP_ANDROID_EMULATOR)
     if(NOT ANDROID_TEMPORARY_FILES_LOCATION)
-        set(ANDROID_TEMPORARY_FILES_LOCATION "/cache" CACHE STRING "The path on the Android device that should be used for temporary files")
+        set(ANDROID_TEMPORARY_FILES_LOCATION "/data/local" CACHE STRING "The path on the Android device that should be used for temporary files")
     endif()
     if(NOT ANDROID_SDK_ROOT)
         if(CMAKE_HOST_SYSTEM MATCHES "Windows.*")
@@ -174,6 +174,7 @@ function(DCMTK_ANDROID_LIST_EMULATORS ONLINE OFFLINE)
             OUTPUT_VARIABLE DEVICES_RAW
             ERROR_QUIET
         )
+        message(STATUS "DEVICES_RAW ${DEVICES_RAW}")
         string(REPLACE "\n" ";" DEVICES "${DEVICES_RAW}")
         foreach(DEVICE ${DEVICES})
             string(REGEX REPLACE "(.+)\t(.+)" "\\1;\\2" DS "${DEVICE}")
@@ -189,6 +190,8 @@ function(DCMTK_ANDROID_LIST_EMULATORS ONLINE OFFLINE)
             endif()
         endforeach()
     endif()
+    message(STATUS "ONLINE: ${${ONLINE}}")
+    message(STATUS "OFFLINE: ${${OFFLINE}}")
     set("${ONLINE}" ${${ONLINE}} PARENT_SCOPE)
     set("${OFFLINE}" ${${OFFLINE}} PARENT_SCOPE)
 endfunction()
@@ -206,11 +209,12 @@ macro(DCMTK_ANDROID_EMULATOR_GENERATE_UUID VAR)
 endmacro()
 else()
 function(DCMTK_ANDROID_EMULATOR_GENERATE_UUID VAR)
-    string(RANDOM LENGTH 20 RAND)
-    string(TIMESTAMP TM)
-    set(${VAR} "${TM}${RAND}")
-    string(MD5 ${VAR} ${${VAR}})
-    set(${VAR} ${${VAR}} PARENT_SCOPE)
+    #string(RANDOM LENGTH 20 RAND)
+    #string(TIMESTAMP TM)
+    #set(${VAR} "${TM}${RAND}")
+    #string(MD5 ${VAR} ${${VAR}})
+    #set(${VAR} ${${VAR}} PARENT_SCOPE)
+    set(${VAR} "22035303db6bdb47b4308170dce087cc" PARENT_SCOPE)
 endfunction()
 endif()
 
@@ -229,6 +233,7 @@ function(DCMTK_ANDROID_GET_EMULATOR_UUID EMULATOR_NAME VAR)
         OUTPUT_VARIABLE OUTPUT
         ERROR_QUIET
     )
+    message(STATUS "GET_EMULATOR_UUID OUTPUT ${OUTPUT}")
     DCMTK_UNSET_PARENT_SCOPE(${VAR})
     if(NOT RESULT)
         string(STRIP "${OUTPUT}" UUID)
@@ -236,6 +241,7 @@ function(DCMTK_ANDROID_GET_EMULATOR_UUID EMULATOR_NAME VAR)
             set("${VAR}" ${UUID} PARENT_SCOPE)
         endif()
     endif()
+    set("${VAR}" "22035303db6bdb47b4308170dce087cc" PARENT_SCOPE)
 endfunction()
 
 #
@@ -253,6 +259,7 @@ function(DCMTK_ANDROID_GET_EMULATOR_NAME VAR EMULATOR_UUID)
     DCMTK_ANDROID_LIST_EMULATORS(ONLINE_EMULATORS OFFLINE_EMULATORS)
     foreach(EMULATOR ${ONLINE_EMULATORS})
         DCMTK_ANDROID_GET_EMULATOR_UUID("${EMULATOR}" UUID)
+        message(STATUS "Comparing emulator UUID ${EMULATOR_UUID} ${UUID}")
         if(EMULATOR_UUID STREQUAL UUID)
             set("${VAR}" "${EMULATOR}" PARENT_SCOPE)
             return()
@@ -328,12 +335,18 @@ function(DCMTK_ANDROID_START_EMULATOR VAR)
         else()
             set(COMMAND sh -c "${ANDROID_EMULATOR_PROGRAM} -avd ${ANDROID_EMULATOR_AVD} -no-window -no-boot-anim -prop ro.emu.uuid=${EMULATOR_UUID} >${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/android-emulator.log 2>&1 < /dev/null &")
         endif()
+        message(STATUS "Running command ${COMMAND}")
         execute_process(
             COMMAND ${COMMAND}
             RESULT_VARIABLE RESULT
-            OUTPUT_QUIET
-            ERROR_QUIET
+            #OUTPUT_QUIET
+                OUTPUT_VARIABLE OUTPUT
+            #ERROR_QUIET
+                ERROR_VARIABLE ERROR
         )
+        message(STATUS "Command result ${RESULT}")
+        message(STATUS "OUTPUT: ${OUTPUT}")
+        message(STATUS "ERROR: ${ERROR}")
         if(NOT RESULT)
             DCMTK_ANDROID_SET_OBJECT_PROPERTIES("${VAR}" STARTING "${EMULATOR_UUID}" "")
         else()
@@ -384,6 +397,7 @@ endfunction()
 #
 function(DCMTK_ANDROID_WAIT_FOR_EMULATOR VAR)
     DCMTK_ANDROID_GET_OBJECT_PROPERTIES("${VAR}")
+    message(STATUS "Emulator State: ${EMULATOR_STATE}")
     if(NOT EMULATOR_STATE)
         message(AUTHOR_WARNING "Error: ${VAR} is not a valid Android emulator instance handle.")
     elseif(EMULATOR_STATE STREQUAL "RUNNING")
@@ -455,18 +469,18 @@ function(DCMTK_ANDROID_STOP_EMULATOR VAR)
     DCMTK_ANDROID_EMULATOR_SHUTDOWN_MESSAGE(MESSAGE)
     message(${MESSAGE})
     if(NOT CMAKE_HOST_SYSTEM MATCHES "Windows.*")
-        DCMTK_ANDROID_STOP_EMULATOR_COMMAND(COMMAND "${EMULATOR_NAME}")
-        execute_process(
-          COMMAND ${COMMAND}
-          RESULT_VARIABLE RESULT
-          OUTPUT_QUIET
-          ERROR_QUIET
-        )
-        if(NOT RESULT)
+        #DCMTK_ANDROID_STOP_EMULATOR_COMMAND(COMMAND "${EMULATOR_NAME}")
+        #execute_process(
+        #  COMMAND ${COMMAND}
+        #  RESULT_VARIABLE RESULT
+        #  OUTPUT_QUIET
+        #  ERROR_QUIET
+        #)
+        #if(NOT RESULT)
             DCMTK_ANDROID_SET_OBJECT_PROPERTIES("${VAR}" STOPPED "${EMULATOR_UUID}" "")
-        else()
-            message(WARNING "Unable to stop the android device emulator, please shutdown \"${EMULATOR_NAME}\" manually!")
-        endif()
+        #else()
+        #    message(WARNING "Unable to stop the android device emulator, please shutdown \"${EMULATOR_NAME}\" manually!")
+        #endif()
     endif()
 endfunction()
 

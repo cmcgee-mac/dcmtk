@@ -211,6 +211,8 @@ LockFile::close () const
 #endif
 }
 
+#undef DCMTK_LOG4CPLUS_USE_LOCKF
+#define DCMTK_LOG4CPLUS_USE_FLOCK 1
 
 void
 LockFile::lock () const

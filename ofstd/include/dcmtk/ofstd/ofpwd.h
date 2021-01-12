@@ -82,7 +82,8 @@ public:
     OFString pw_passwd;
 
     /// the real name.
-    OFString pw_gecos;
+    // This conflicts with pw_passwd on Android
+    //OFString pw_gecos;
 
     /// the home directory.
     OFString pw_dir;

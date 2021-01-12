@@ -328,6 +328,8 @@ int OFStandard::vsnprintf(char *str, size_t size, const char *format, va_list ap
 #endif /* _MSC_VER */
 }
 
+#undef HAVE_CHARP_STRERROR_R
+
 #ifdef HAVE_PROTOTYPE_STRERROR_R
 /*
  * convert a given error code to a string. This function wraps the various
@@ -2867,6 +2869,7 @@ void OFStandard::getAddressByHostname(const char *name, OFSockAddr& result)
 }
 
 
+#undef HAVE_GETGRNAM_R
 
 #ifdef HAVE_GRP_H
 OFStandard::OFGroup OFStandard::getGrNam( const char* name )
@@ -2956,7 +2959,8 @@ OFStandard::OFGroup::operator OFBool() const { return ok; }
 OFStandard::OFPasswd::OFPasswd()
 : pw_name()
 , pw_passwd()
-, pw_gecos()
+// This conflicts with pw_passwd on Android
+//, pw_gecos()
 , pw_dir()
 , pw_shell()
 , pw_uid()
@@ -2968,7 +2972,8 @@ OFStandard::OFPasswd::OFPasswd()
 OFStandard::OFPasswd::OFPasswd( passwd* const p )
 : pw_name()
 , pw_passwd()
-, pw_gecos()
+// This conflicts with pw_passwd on Android
+//, pw_gecos()
 , pw_dir()
 , pw_shell()
 , pw_uid()
@@ -2982,7 +2987,8 @@ OFStandard::OFPasswd::OFPasswd( passwd* const p )
         pw_uid    = p->pw_uid;
         pw_gid    = p->pw_gid;
 #ifdef HAVE_PASSWD_GECOS
-        pw_gecos  = p->pw_gecos;
+        // This conflicts with pw_passwd on Android
+        //pw_gecos  = p->pw_gecos;
 #endif
         pw_dir    = p->pw_dir;
         pw_shell  = p->pw_shell;
@@ -3027,6 +3033,7 @@ OFtuple<> OFmake_tuple() { return OFtuple<>(); }
 OFtuple<> OFtie() { return OFtuple<>(); }
 #endif
 
+#undef HAVE_GETLOGIN_R
 
 OFString OFStandard::getUserName()
 {

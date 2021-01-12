@@ -811,6 +811,8 @@ GlobalDcmDataDictionary::~GlobalDcmDataDictionary()
   delete dataDict;
 }
 
+#undef ENABLE_EXTERNAL_DICTIONARY
+
 void GlobalDcmDataDictionary::createDataDict()
 {
   /* Make sure only one thread tries to initialize the dictionary */

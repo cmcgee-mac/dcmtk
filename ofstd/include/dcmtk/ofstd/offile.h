@@ -63,6 +63,9 @@ END_EXTERN_C
  * Yes, this is ugly.
  */
 
+// This seems to be needed for armeabi-v7a and x86_64 on API 28
+#define DCMTK_ENABLE_LFS DCMTK_LFS
+
 /* Find out whether to use explicit LFS function calls to handle
  * large file support
  */
