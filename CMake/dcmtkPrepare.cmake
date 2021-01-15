@@ -131,6 +131,9 @@ DCMTK_INFERABLE_OPTION(DCMTK_ENABLE_CXX11 "Enable use of native C++11 features (
 if(WIN32 OR MINGW)
   option(DCMTK_ENABLE_BUILTIN_DICTIONARY "Configure DCMTK with compiled-in data dictionary." ON)
   option(DCMTK_ENABLE_EXTERNAL_DICTIONARY "Configure DCMTK to load external dictionary from default path on startup." ON)
+elseif(ANDROID)
+  option(DCMTK_ENABLE_BUILTIN_DICTIONARY "Configure DCMTK with compiled-in data dictionary." ON)
+  option(DCMTK_ENABLE_EXTERNAL_DICTIONARY "Configure DCMTK to load external dictionary from default path on startup." OFF)
 else() # built-in dictionary turned off on Unix per default
   option(DCMTK_ENABLE_BUILTIN_DICTIONARY "Configure DCMTK with compiled-in data dictionary." OFF)
   option(DCMTK_ENABLE_EXTERNAL_DICTIONARY "Configure DCMTK to load external dictionary from default path on startup." ON)
@@ -192,7 +195,7 @@ include("${DCMTK_CMAKE_INCLUDE}CMake/dcmtkMacros.cmake")
 
 if(CMAKE_CROSSCOMPILING)
   unset(DCMTK_UNIT_TESTS_UNSUPPORTED_WARN_ONCE CACHE)
-  if(ANDROID)
+  if(ANDROID AND NOT SKIP_ANDROID_EMULATOR)
     unset(DCMTK_TRY_RUN_ANDROID_RUNTIME_INSTALLED CACHE)
     DCMTK_ANDROID_START_EMULATOR(DCMTK_ANDROID_EMULATOR_INSTANCE)
   endif()
