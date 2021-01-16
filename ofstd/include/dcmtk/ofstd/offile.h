@@ -112,6 +112,11 @@ typedef fpos_t offile_fpos_t;
 // the type we use to store the last error.
 typedef int offile_errno_t;
 
+#ifdef F_GET_POS_MISSING_DECL
+// Issue with the unified 64-bit and 32-bit headers in Android https://github.com/android/ndk/issues/442
+int fgetpos(FILE*, fpos_t*);
+int fsetpos(FILE*, const fpos_t*);
+#endif // F_GET_POS_MISSING_DECL
 
 // forward declarations
 class OFpath;
